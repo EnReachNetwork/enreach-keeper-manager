@@ -1,12 +1,12 @@
 {
-  "name": "enreach-miner",
+  "name": "enreach-manager",
   "version": "1.0.0",
   "main": "index.js",
   "type": "module",
   "scripts": {
-      "dev": "node --loader ts-node/esm src/index.ts",
-      "build": "tsup src/index.ts --format esm --dts",
-      "start": "node dist/index.js"
+    "dev": "node --loader ts-node/esm src/index.ts",
+    "build": "tsup src/index.ts --format esm --dts",
+    "start": "node dist/index.js"
   },
   "keywords": [],
   "author": "",
@@ -14,14 +14,19 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "@types/ws": "^8.5.13",
     "ts-node": "^10.9.2",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2"
   },
   "dependencies": {
+    "@prisma/client": "^6.1.0",
     "chalk": "^5.4.1",
     "commander": "^12.1.0",
+    "dotenv": "^16.4.7",
+    "enreach-client-ts": "^0.0.8",
     "inquirer": "^12.3.0",
-    "ora": "^8.1.1"
+    "ora": "^8.1.1",
+    "viem": "^2.21.57"
   }
 }
