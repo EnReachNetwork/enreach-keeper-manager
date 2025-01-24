@@ -8,7 +8,8 @@ import {
   txClient,
 } from "enreach-client-ts/lib/enreach.workload/module.js";
 
-export const MinEpoch = 481973;
+// export const MinEpoch = 481973;
+export const MinEpoch = 482694;
 export const DECIMALS = 6;
 
 export const startWorkloadModule = async (prisma: PrismaClient) => {
