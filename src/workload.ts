@@ -7,6 +7,7 @@ import {
   MsgCreateWorkload,
   txClient,
 } from "enreach-client-ts/lib/enreach.workload/module.js";
+import { getLatestUploadedEpoch } from "./actions/workload.js";
 
 // export const MinEpoch = 481973;
 export const MinEpoch = 482694;
@@ -16,13 +17,17 @@ export const startWorkloadModule = async (prisma: PrismaClient) => {
   const currentEpoch = Math.floor(Date.now() / 1000 / 3600);
   logger.info(`Starting workload module, current epoch is ${currentEpoch}`);
 
-  await handleHistoryWorkReports(prisma);
+  handleHistoryWorkReports(prisma);
+  setInterval(() => {
+    handleHistoryWorkReports(prisma);
+  }, 20000);
 };
 
 export const handleHistoryWorkReports = async (prisma: PrismaClient) => {
-  logger.info("Handling history work reports");
+  const latestEpoch = await getLatestUploadedEpoch();
+  logger.info(`Handling history work reports, from ${latestEpoch}`);
   const currentEpoch = Math.floor(Date.now() / 1000 / 3600);
-  for (let i = MinEpoch; i < currentEpoch; i++) {
+  for (let i = latestEpoch; i < currentEpoch; i++) {
     const begin = new Date(i * 3600 * 1000);
     const end = new Date((i + 1) * 3600 * 1000);
 
