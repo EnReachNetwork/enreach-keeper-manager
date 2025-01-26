@@ -29,7 +29,7 @@ export const handleHistoryWorkReports = async (prisma: PrismaClient) => {
   const latestEpoch = await getLatestUploadedEpoch();
   logger.info(`Handling history work reports, from ${latestEpoch}`);
   const currentEpoch = Math.floor(Date.now() / 1000 / 3600);
-  for (let i = latestEpoch; i < currentEpoch; i++) {
+  for (let i = latestEpoch + 1; i < currentEpoch; i++) {
     const begin = new Date(i * 3600 * 1000);
     const end = new Date((i + 1) * 3600 * 1000);
 
