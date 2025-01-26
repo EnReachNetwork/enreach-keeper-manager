@@ -13,14 +13,16 @@ import { getLatestUploadedEpoch } from "./actions/workload.js";
 export const MinEpoch = 482694;
 export const DECIMALS = 6;
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export const startWorkloadModule = async (prisma: PrismaClient) => {
   const currentEpoch = Math.floor(Date.now() / 1000 / 3600);
   logger.info(`Starting workload module, current epoch is ${currentEpoch}`);
 
-  handleHistoryWorkReports(prisma);
-  setInterval(() => {
-    handleHistoryWorkReports(prisma);
-  }, 20000);
+  while (true) {
+    await handleHistoryWorkReports(prisma);
+    await sleep(10000);
+  }
 };
 
 export const handleHistoryWorkReports = async (prisma: PrismaClient) => {
