@@ -5,6 +5,7 @@ import { Message } from "./types/ws.js";
 import { WorkReport } from "./types/work.js";
 import { PrismaClient } from "@prisma/client";
 import { ENV } from './config/env';
+import { minerExist } from './utils/chain.js';
 
 const PORT = ENV.MANAGER_PORT;
 
@@ -28,7 +29,20 @@ export class WebSocketManager {
             console.log(`WebSocket server is listening on port ${PORT}`);
         });
 
-        this.wss.on('connection', (ws, req) => {
+        this.wss.on('connection', async (ws, req) => {
+            const token = req.headers['authorization']?.split(' ')[1];
+            if (!token) {
+                console.log('No token provided');
+                ws.close(401, "No token provided");
+                return;
+            }
+            const { authenticated, nodeInfo } = await this.authenticate(token);
+            if (!authenticated) {
+                console.log('Failed to authenticate');
+                ws.close(401, "Failed to authenticate");
+                return;
+            }
+
             const clientAddress = req.socket.remoteAddress;
             console.log(`New client connected from ${clientAddress}`);
 
@@ -71,6 +85,16 @@ export class WebSocketManager {
                 return this.handleWorkReport(ws, message as Message<WorkReport>);
             default:
                 console.log(`Unknown message type: ${message.type}`);
+        }
+    }
+
+    async authenticate(token: string): Promise<{ authenticated: boolean, nodeInfo: { minerId: string } }> {
+        const { minerId } = JSON.parse(Buffer.from(token, 'base64').toString('utf-8'));
+        const minerExistOnChain = await minerExist(minerId);
+        if (minerExistOnChain) {
+            return { authenticated: false, nodeInfo: null };
+        } else {
+            return { authenticated: true, nodeInfo: { minerId } };
         }
     }
 

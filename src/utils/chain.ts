@@ -4,6 +4,11 @@ import { txClient } from "enreach-client-ts/lib/enreach.manager";
 import { mnemonicToAccount } from "viem/accounts";
 import { MsgRegisterManager } from "enreach-client-ts/lib/enreach.manager/module";
 import { queryClient } from "enreach-client-ts/lib/cosmos.bank.v1beta1";
+import { queryClient as minerQueryClient } from "enreach-client-ts/lib/enreach.miner";
+import { redis } from "./redis";
+import { REDIS_KEYS } from "../types/redis";
+import { Status } from "../types/common";
+import { MinerStatus } from "../types/chain";
 
 export async function registManager(): Promise<string> {
     console.log(`start regist manager`)
@@ -53,4 +58,23 @@ export async function checkBalance() {
     const client = queryClient({ addr: ENV.READ_CHAIN_URL });
     const result = await client.queryBalance(address, { denom: "stake" });
 
+}
+
+export async function minerExist(id: string): Promise<boolean> {
+    const status = await redis.hget(REDIS_KEYS.MINER_ID_MAP, id);
+    if (status == null) {
+        const client = minerQueryClient({ addr: ENV.READ_CHAIN_URL });
+        const result = await client.queryMiner(id);
+        if (result.status === 200) {
+            // save to db
+            const { Miner } = result.data;
+            const valid = Miner.status === MinerStatus.valid;
+            await redis.hset(REDIS_KEYS.MINER_ID_MAP, Miner.id, valid ? Status.valid : Status.invalid);
+            return valid;
+        } else {
+            return false;
+        }
+    } else {
+        return status === `${Status.valid}`;
+    }
 }

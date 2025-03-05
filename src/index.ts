@@ -2,8 +2,10 @@ import { getManagerId } from "./service/chain";
 import { WebSocketManager } from "./manager";
 import { prisma } from "./db";
 import { startWorkloadModule } from "./workload";
-const schedule = require("node-schedule");
+import { registManager } from "./utils/chain";
 async function start() {
+  const tx = await registManager();
+  console.log(`register manager tx: ${tx}`);
   // 查询该是否改区域账户,判断是否需要注册(所有参数均相同)
   const managerId = await getManagerId();
   // 启动webSocketServer,监听来自tracker的消息

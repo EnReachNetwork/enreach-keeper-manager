@@ -27,6 +27,7 @@
     "dotenv": "^16.4.7",
     "enreach-client-ts": "^0.0.12",
     "inquirer": "^12.3.0",
+    "ioredis": "^5.5.0",
     "node-schedule": "^2.1.1",
     "ora": "^8.1.1",
     "viem": "^2.21.57"

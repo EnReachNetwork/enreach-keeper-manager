@@ -24,4 +24,13 @@ export const ENV = {
   REGION_CODE: process.env.REGION_CODE || "sg",
   READ_CHAIN_URL: process.env.READ_CHAIN_URL || "http://localhost:1317",
   WRITE_CHAIN_URL: process.env.WRITE_CHAIN_URL || "http://localhost:26657",
+  REDIS: {
+    useCluster: process.env.REDIS_CLUSTER || "false",
+    clusterNodes: process.env.REDIS_CLUSTER_NODES || '[{"host":"127.0.0.1","port":6379}]',
+    host: process.env.REDIS_HOST || 'localhost',
+    port: Number(process.env.REDIS_PORT || "6379"),
+    password: process.env.REDIS_PASSWORD || "false",
+    user: process.env.REDIS_USER || "",
+    tls: process.env.REDIS_TLS || "false",
+  }
 };
