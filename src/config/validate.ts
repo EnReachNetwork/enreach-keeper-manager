@@ -1,6 +1,6 @@
 import { ENV } from "./env.js";
 import chalk from "chalk";
-import { logger } from "../utils/logger.js";
+import { logger } from "../utils/logger";
 
 class ConfigError extends Error {
   constructor(message: string) {
@@ -25,6 +25,13 @@ export function validateConfig() {
       required: true,
       validator: (v) => typeof v === "string" && v.trim().length > 0,
       message: "MNEMONIC is required and cannot be empty",
+    },
+    {
+      value: ENV.REGION_CODE,
+      name: "REGION_CODE",
+      required: true,
+      validator: (v) => typeof v === "string" && v.trim().length > 0,
+      message: "REGION_CODE is required and cannot be empty",
     },
   ];
 

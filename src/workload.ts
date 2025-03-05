@@ -1,13 +1,10 @@
-import { logger } from "./utils/logger.js";
+import { logger } from "./utils/logger";
 import { PrismaClient } from "@prisma/client";
 import { WorkReport } from "./types/work.js";
 import { DirectSecp256k1HdWallet } from "@cosmjs/proto-signing";
-import { ENV } from "./config/env.js";
-import {
-  MsgCreateWorkload,
-  txClient,
-} from "enreach-client-ts/lib/enreach.workload/module.js";
-import { getLatestUploadedEpoch } from "./actions/workload.js";
+import { ENV } from "./config/env";
+import { getLatestUploadedEpoch } from "./actions/workload";
+import { MsgCreateWorkload, txClient } from "enreach-client-ts/lib/enreach.workload/module";
 
 // export const MinEpoch = 481973;
 export const MinEpoch = 482694;
@@ -18,7 +15,6 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const startWorkloadModule = async (prisma: PrismaClient) => {
   const currentEpoch = Math.floor(Date.now() / 1000 / 3600);
   logger.info(`Starting workload module, current epoch is ${currentEpoch}`);
-
   while (true) {
     await handleHistoryWorkReports(prisma);
     await sleep(10000);
@@ -43,7 +39,7 @@ export const handleHistoryWorkReports = async (prisma: PrismaClient) => {
     });
     logger.info(`Handling ${reports.length} for epoch(${i})`);
     const wrs = reports.map((r) => r.data as unknown as WorkReport);
-    const peerWrs = await calculateWorkload(wrs);
+    const peerWrs = calculateWorkload(wrs);
     console.log(peerWrs);
     for (let j = 0; j < peerWrs.length; j++) {
       const { peerId, score } = peerWrs[j];
@@ -52,7 +48,7 @@ export const handleHistoryWorkReports = async (prisma: PrismaClient) => {
   }
 };
 
-export const calculateWorkload = (wrs: WorkReport[]) => {
+const calculateWorkload = (wrs: WorkReport[]) => {
   const peerWorkloads = new Map<string, number>();
 
   for (const wr of wrs) {
@@ -76,7 +72,7 @@ export const calculateWorkload = (wrs: WorkReport[]) => {
   });
 };
 
-export const uploadWorkload = async (
+const uploadWorkload = async (
   epoch: number,
   minerId: string,
   scoreWithDecimals: number,
